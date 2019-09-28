@@ -7,7 +7,8 @@ RUN apk update && apk upgrade --no-cache
 RUN apk --no-cache -U add wget
 
 RUN wget https://bootstrap.pypa.io/get-pip.py && \
-    python3 ./get-pip.py
+    python3 ./get-pip.py && \
+    pip3 install webssh
 
 RUN wssh --port=$SERVER_PORT
 
