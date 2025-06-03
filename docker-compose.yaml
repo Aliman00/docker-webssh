@@ -1,0 +1,12 @@
+services:
+  webssh:
+    build: .
+    ports:
+      - "8888:8888"
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+    user: "1001:1001"
