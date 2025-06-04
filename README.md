@@ -1,49 +1,65 @@
 # docker-webssh
 
-A [WebSSH](https://pypi.org/project/webssh/) container with OpenShift template for deployment.
+A [WebSSH](https://pypi.org/project/webssh/) container designed for convenient deployment, including an OpenShift template for streamlined setup.
 
-There are plenty of different Web-based terminals out there, Wetty, WebSSH, WebSSH2, etc.  Most are just built on [xterm](https://xtermjs.org/) and run on some sort of Node server like express.js.
+This project provides a simple way to run the [WebSSH](https://pypi.org/project/webssh/) Python package in a containerized environment. While there are many web-based SSH terminals (such as Wetty, WebSSH2, and others, often built on [xterm.js](https://xtermjs.org/) and Node.js), this solution is based on Python and Alpine Linux for a lightweight footprint.
 
-This particular container is built on the Python package [WebSSH](https://pypi.org/project/webssh/).  Not heavily used as keepAliveTimeout is low and does not persist well enough for workshops.
+> **Note:** The container uses a low keepAliveTimeout, so session persistence may not be ideal for long-running workshops.
 
+---
 
 ## Usage
 
 ### Build from Dockerfile
 
-Basically it's a very simple **Dockerfile**, using Python 3.7.4 on Alpine Linux, installs needed packages, WebSSH, starts a WebSSH instance, and exposes the port 8888.
+You can build the Docker image locally using the provided Dockerfile. This setup uses Python 3.7.4 on Alpine Linux, installs the required packages and WebSSH, launches a WebSSH instance, and exposes port 8888.
 
-```
-# git clone https://github.com/kenmoini/docker-webssh
-# cd docker-webssh
-# docker build - < Dockerfile
+```sh
+git clone https://github.com/Aliman00/docker-webssh
+cd docker-webssh
+docker build -t aliman00/docker-webssh .
 ```
 
-Then ```docker run``` and the image checksum of whichever was built.
+Then run the container:
+
+```sh
+docker run -p 8888:8888 aliman00/docker-webssh:latest
+```
+
+Navigate to [http://localhost:8888](http://localhost:8888) in your browser to access WebSSH.
 
 ### Pull from Docker Hub
 
-Just want to use a pre-built and public container image?  Sure, no problem...
+If you prefer not to build the image yourself, you can pull it from Docker Hub:
 
+```sh
+docker run -p 8888:8888 aliman00/docker-webssh:latest
 ```
-# docker run -p 8888:8888 kenmoini/docker-webssh:latest
-```
-
-Navigate to localhost:8888 to access the container.
 
 ### Deploy to OpenShift
 
-One of those fancy fucks with an OCP cluster?  Dope - use the template in this repository to quickly deploy this same cluster.
+For OpenShift users, an OpenShift template is provided for rapid deployment:
 
+```sh
+oc create -f https://raw.githubusercontent.com/Aliman00/docker-webssh/master/openshift-template.yml
+oc new-app webssh
 ```
-# oc create -f https://raw.githubusercontent.com/kenmoini/docker-webssh/master/openshift-template.yml
-# oc new-app webssh
-```
 
-This will create...
+This will create:
+- A DeploymentConfig that pulls the container image from Docker Hub (the version can be set via a template parameter)
+- A Service (configurable via parameter)
+- A Route to expose the service
 
-- A Deployment Configuration that pulls in the container image from Docker Hub - version can be set with a parameter in the template
-- A Service that can be set via parameter
-- A Route to expose the Service
+> **Security Advisory:** Always secure your OpenShift route with TLS/SSL. Exposing SSH over an insecure web browser is not recommended. Ensure you understand how your cluster handles SSL termination and apply appropriate security measures.
 
-#### ***NOTE:*** I would advise securing that Route with whatever means you do.  SSH over an insecure web browser is...dumb.  I can't predict how your cluster terminates SSL though - cert-manager, certmonger, Let's Encrypt, edge load balancer termination, etc.
+---
+
+## License
+
+This project is licensed under the MIT License.
+
+---
+
+## Credits
+
+Inspired by [kenmoini/docker-webssh](https://github.com/kenmoini/docker-webssh) and the [WebSSH](https://pypi.org/project/webssh/) Python package.
