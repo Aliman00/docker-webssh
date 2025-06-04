@@ -31,4 +31,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 
 EXPOSE 8888
 
-ENTRYPOINT ["wssh", "--port=8888", "--host=0.0.0.0"]
+
+ENTRYPOINT ["wssh", "--port=8888", "--address=0.0.0.0"]
